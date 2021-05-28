@@ -34,7 +34,7 @@ async function fetchTransactions(until: string): Promise<string> {
         //console.log(date, tx?.slot, decoded, signature, log)
 
         if (decoded.Deposit) {
-          let signer = ins.keys[3].pubkey
+          let signer = ins.keys[2].pubkey
           let vault = ins.keys[4].pubkey
           let vaultIndex = vaults.indexOf(vault.toBase58())
           let currency = symbols[vaultIndex]
@@ -49,7 +49,7 @@ async function fetchTransactions(until: string): Promise<string> {
             notify(msg)
           }
         } else if (decoded.Withdraw) {
-          let signer = ins.keys[3].pubkey
+          let signer = ins.keys[2].pubkey
           let vault = ins.keys[4].pubkey
           let vaultIndex = vaults.indexOf(vault.toBase58())
           let currency = symbols[vaultIndex]
