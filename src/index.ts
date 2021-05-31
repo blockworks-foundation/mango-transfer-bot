@@ -20,7 +20,7 @@ async function fetchPrices() {
 async function fetchTransactions(until: string): Promise<string> {
   let prices = await fetchPrices()
   let signatures = await conn.getConfirmedSignaturesForAddress2(mangoGroupPk, { until })
-  for (let i = 0; i < signatures.length; ++i) {
+  for (let i = signatures.length - 1; i >= 0; i-=1) {
     let signature = signatures[i].signature
     let tx = await conn.getConfirmedTransaction(signature)
     for (let ins of tx?.transaction?.instructions || []) {
@@ -45,7 +45,6 @@ async function fetchTransactions(until: string): Promise<string> {
           console.log(date, tx?.slot, msg)
           //@ts-ignore
           if (quantityUSD >= process.env.MIN_TRANSFER_USD) {
-            console.log('notify')
             notify(msg)
           }
         } else if (decoded.Withdraw) {
@@ -60,14 +59,15 @@ async function fetchTransactions(until: string): Promise<string> {
           console.log(date, tx?.slot, msg)
           //@ts-ignore
           if (quantityUSD >= process.env.MIN_TRANSFER_USD) {
-            console.log('notify')
             notify(msg)
           }
         }
       }
+      await sleep(500)
     }
   }
-  return signatures.length > 0 ? signatures[signatures.length - 1].signature : until;
+
+  return signatures.length > 0 ? signatures[0].signature : until;
 }
 
 function notify(content: string) {
@@ -92,7 +92,7 @@ async function watchTransactions() {
   let lastSignature = signatures[0].signature
   while (true) {
     lastSignature = await fetchTransactions(lastSignature)
-    await sleep(5000)
+    await sleep(2000)
   }
 }
 
